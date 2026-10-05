@@ -1,0 +1,80 @@
+// Vercel Serverless Function: /api/search?url=<link tiktok>
+const HOST = "tiktok-scraper7.p.rapidapi.com";
+const KEY = process.env.RAPIDAPI_KEY;
+
+async function call(path, params) {
+  const qs = new URLSearchParams(params).toString();
+  const r = await fetch(`https://${HOST}${path}?${qs}`, {
+    headers: { "x-rapidapi-key": KEY, "x-rapidapi-host": HOST },
+  });
+  if (r.status === 429) throw new Error("QUOTA");
+  const j = await r.json().catch(() => ({}));
+  return j && j.data ? j.data : null;
+}
+
+const RE_AM = /https?:\/\/alightcreative\.com\/am\/share\/[^\s"'<>]+/gi;
+const RE_DRIVE = /https?:\/\/drive\.google\.com\/(?:file\/d\/|open\?id=)[^\s"'<>]+/gi;
+
+function extract(text, source, by, out) {
+  if (!text) return;
+  const add = (type, m) => {
+    const url = m.replace(/[)\].,;!?]+$/, "");
+    if (!out.some((o) => o.url === url)) out.push({ type, url, source, by });
+  };
+  (text.match(RE_AM) || []).forEach((m) => add("5mb", m));
+  (text.match(RE_DRIVE) || []).forEach((m) => add("xml", m));
+}
+
+export default async function handler(req, res) {
+  const url = (req.query.url || "").trim();
+  if (!/tiktok\.com/i.test(url)) return res.status(400).json({ error: "Link TikTok tidak valid." });
+  if (!KEY) return res.status(500).json({ error: "RAPIDAPI_KEY belum diisi di Vercel." });
+
+  try {
+    const v = await call("/", { url, hd: 0 });
+    if (!v) return res.status(404).json({ error: "Video tidak ditemukan atau akun privat." });
+
+    const video = {
+      id: v.id,
+      title: v.title || "",
+      cover: v.cover || v.origin_cover || "",
+      author: v.author ? v.author.unique_id : "",
+      comments: v.comment_count || 0,
+      views: v.play_count || 0,
+      likes: v.digg_count || 0,
+    };
+    const results = [];
+    extract(video.title, "deskripsi", video.author, results);
+
+    if (video.author) {
+      const u = await call("/user/info", { unique_id: video.author }).catch(() => null);
+      extract(u && u.user && u.user.signature, "bio", video.author, results);
+    }
+
+    // komentar (maks 3 halaman) + balasan (maks 20 komentar yang punya balasan)
+    const withReplies = [];
+    let cursor = 0;
+    for (let p = 0; p < 3; p++) {
+      const c = await call("/comment/list", { url, count: 50, cursor }).catch((e) => { if (e.message === "QUOTA") throw e; return null; });
+      if (!c || !c.comments) break;
+      for (const cm of c.comments) {
+        extract(cm.text, "komentar", cm.user && cm.user.unique_id, results);
+        if (cm.reply_total > 0) withReplies.push(cm);
+      }
+      if (!c.hasMore) break;
+      cursor = c.cursor;
+    }
+    await Promise.all(
+      withReplies.slice(0, 20).map(async (cm) => {
+        const r = await call("/comment/reply", { video_id: video.id, comment_id: cm.id, count: 50, cursor: 0 }).catch(() => null);
+        ((r && r.comments) || []).forEach((rp) => extract(rp.text, "balasan", rp.user && rp.user.unique_id, results));
+      })
+    );
+
+    res.setHeader("Cache-Control", "s-maxage=600");
+    res.status(200).json({ video, results });
+  } catch (e) {
+    if (e.message === "QUOTA") return res.status(429).json({ error: "Kuota API habis. Coba lagi nanti." });
+    res.status(500).json({ error: "Gagal mengambil data. Coba lagi." });
+  }
+}
