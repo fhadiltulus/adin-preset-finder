@@ -9,7 +9,19 @@ async function call(path, params) {
   });
   if (r.status === 429) throw new Error("QUOTA");
   const j = await r.json().catch(() => ({}));
-  return j && j.data ? j.data : null;
+  if (r.status === 401 || r.status === 403) throw new Error("API key salah atau belum subscribe: " + (j.message || r.status));
+  if (j && j.data) return j.data;
+  if (j && j.msg && path === "/") throw new Error("API: " + j.msg);
+  return null;
+}
+
+// ubah link pendek (vt.tiktok.com / vm.tiktok.com) jadi link video lengkap
+async function resolve(u) {
+  if (!/\/\/(vt|vm)\.tiktok\.com/i.test(u)) return u;
+  try {
+    const r = await fetch(u, { redirect: "follow", headers: { "user-agent": "Mozilla/5.0" } });
+    return r.url.split("?")[0] || u;
+  } catch (e) { return u; }
 }
 
 const RE_AM = /https?:\/\/alightcreative\.com\/am\/share\/[^\s"'<>]+/gi;
@@ -26,11 +38,12 @@ function extract(text, source, by, out) {
 }
 
 export default async function handler(req, res) {
-  const url = (req.query.url || "").trim();
-  if (!/tiktok\.com/i.test(url)) return res.status(400).json({ error: "Link TikTok tidak valid." });
+  const input = (req.query.url || "").trim();
+  if (!/tiktok\.com/i.test(input)) return res.status(400).json({ error: "Link TikTok tidak valid." });
   if (!KEY) return res.status(500).json({ error: "RAPIDAPI_KEY belum diisi di Vercel." });
 
   try {
+    const url = await resolve(input);
     const v = await call("/", { url, hd: 0 });
     if (!v) return res.status(404).json({ error: "Video tidak ditemukan atau akun privat." });
 
@@ -74,7 +87,9 @@ export default async function handler(req, res) {
     res.setHeader("Cache-Control", "s-maxage=600");
     res.status(200).json({ video, results });
   } catch (e) {
+    if (/^API/.test(e.message)) return res.status(502).json({ error: e.message });
     if (e.message === "QUOTA") return res.status(429).json({ error: "Kuota API habis. Coba lagi nanti." });
     res.status(500).json({ error: "Gagal mengambil data. Coba lagi." });
   }
 }
+  
