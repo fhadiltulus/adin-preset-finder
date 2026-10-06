@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#040a1a">
+<title>Adin Preset Finder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#040a1a;--panel:#0a1530;--panel2:#0d1b3d;--line:#162a55;--ink:#e8f0ff;--mute:#8aa0cf;--acc:#3db4ff;--accd:#1478d4;--glow:#3db4ff55}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:radial-gradient(700px 380px at 85% -5%,#12307a66,transparent),radial-gradient(600px 360px at -10% 30%,#0b2a6a44,transparent),var(--bg);color:var(--ink);font:15px/1.55 'Chakra Petch',system-ui,sans-serif;min-height:100vh;padding:22px 18px 40px}
+main{max-width:560px;margin:0 auto}
+.brand{display:flex;flex-direction:column;align-items:center;gap:6px;margin:6px 0 30px;text-align:center}
+.brand .t{display:flex;align-items:center;gap:10px;font-weight:700;font-size:21px}
+.brand svg{width:36px;height:36px;filter:drop-shadow(0 0 8px var(--glow))}
+.brand p{color:var(--mute);font-size:13px}
+.h{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.h i{width:54px;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--acc),transparent);box-shadow:0 0 12px var(--glow);transform:skewX(-30deg)}
+h1,h2{font-size:25px;font-weight:700;line-height:1.2}
+h2{font-size:20px}
+.lead{color:var(--mute);font-size:14px;margin-bottom:18px}
+.row{display:flex;gap:10px}
+.field{flex:1;min-width:0;display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:0 14px}
+.field:focus-within{border-color:var(--acc);box-shadow:0 0 0 3px var(--glow)}
+.field svg{flex:none;width:18px;height:18px;stroke:var(--mute)}
+input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--ink);font:inherit;padding:14px 0}
+button{font:inherit;cursor:pointer;border:0}
+.x{background:none;color:var(--mute);font-size:13px;padding:4px}
+.btn{background:var(--acc);color:#03112b;font-weight:700;border-radius:14px;padding:0 22px;box-shadow:0 4px 0 var(--accd),0 8px 22px var(--glow);transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--accd)}
+.btn:disabled{opacity:.7}
+.chips{display:flex;gap:8px;overflow-x:auto;margin:12px 0 0;padding-bottom:4px;scrollbar-width:none}
+.chip{flex:none;background:var(--panel);border:1px solid var(--line);color:var(--mute);border-radius:99px;padding:5px 14px;font:12px 'JetBrains Mono',monospace}
+.steps{margin-top:34px;list-style:none;padding:0;display:grid;gap:14px}
+.steps li{display:flex;gap:12px;align-items:center;color:var(--mute);font-size:14px}
+.steps b{flex:none;width:28px;height:28px;border-radius:50%;border:1px solid var(--accd);color:var(--acc);display:grid;place-items:center;font-size:13px}
+.sh{color:var(--acc);font-weight:600;font-size:13px;margin-top:34px;margin-bottom:14px}
+.state{margin-top:24px;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--mute);display:flex;gap:12px;align-items:center}
+.state.err{color:#ff9fae;border-color:#5b2332}
+.spin{flex:none;width:18px;height:18px;border:2px solid var(--line);border-top-color:var(--acc);border-radius:50%;animation:s .8s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+.player{margin-top:24px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#000;display:grid;place-items:center}
+.player video,.player img{width:100%;max-height:420px;object-fit:contain;display:block}
+.cap{margin:12px 0 14px;color:#c4d3f3;font-size:14px;word-break:break-word}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;margin-bottom:6px}
+.meta small{display:block;color:var(--mute);font-size:12px}
+.meta b{font-size:16px}
+.card{display:flex;flex-wrap:wrap;gap:14px;padding:14px;margin-bottom:12px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,var(--panel2),var(--panel));animation:in .35s ease both}
+@keyframes in{from{opacity:0;transform:translateY(8px)}}
+.thumb{flex:none;width:64px;height:64px;border-radius:10px;background:#0a1836;overflow:hidden;display:grid;place-items:center}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.thumb svg{width:100%;height:100%}
+.info{flex:1;min-width:0}
+.info b{display:block;font-size:16px;line-height:1.3}
+.tag{display:inline-block;margin-top:6px;font:600 11px 'JetBrains Mono',monospace;border:1px solid var(--acc);color:var(--acc);border-radius:6px;padding:1px 8px}
+.tag.xml{border-color:#5fe3d0;color:#5fe3d0}
+.by{color:var(--mute);font-size:12.5px;margin-top:4px}
+.link{width:100%;font:12.5px/1.5 'JetBrains Mono',monospace;color:#9fb8ea;word-break:break-all}
+.act{width:100%;display:flex;gap:10px}
+.act a,.act button{padding:11px 18px;border-radius:12px;font-weight:600;font-size:14px;text-decoration:none}
+.act a{background:var(--acc);color:#03112b;box-shadow:0 3px 0 var(--accd)}
+.act button{background:none;border:1px solid var(--line);color:var(--ink)}
+footer{margin-top:44px;padding-top:26px;border-top:1px solid var(--line);color:var(--mute);font-size:13px}
+footer .t{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--ink);margin-bottom:8px}
+footer svg{width:26px;height:26px}
+footer .c{display:flex;gap:44px;margin-top:18px}
+footer b{display:block;color:var(--acc);font-size:12px;margin-bottom:6px}
+footer span{display:block}
+footer .by2{margin-top:22px;font-size:12px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <div class="brand">
+    <div class="t"><svg viewBox="0 0 40 40" fill="none" stroke="#3db4ff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 14V8a3 3 0 0 1 3-3h6M26 5h6a3 3 0 0 1 3 3v6M35 26v6a3 3 0 0 1-3 3h-6M14 35H8a3 3 0 0 1-3-3v-6"/><path d="M13 27 20 12l7 15M16 22h8"/></svg>Adin Preset Finder</div>
+    <p>Cari preset Alight Motion dari link TikTok mana pun</p>
+  </div>
+
+  <div class="h"><i></i><h1>Cari link preset</h1></div>
+  <p class="lead">Tempel link video TikTok. Deskripsi, bio akun, komentar, dan balasan dipindai satu per satu sampai link preset ketemu.</p>
+
+  <div class="row">
+    <div class="field">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="url" placeholder="https://vt.tiktok.com/xxx" inputmode="url" autocomplete="off">
+      <button class="x" id="paste">Tempel</button>
+    </div>
+    <button class="btn" id="go">Cari</button>
+  </div>
+  <div class="chips" id="chips"></div>
+
+  <div id="out">
+    <p class="sh">Cara pakai</p>
+    <ol class="steps">
+      <li><b>1</b>Tempel link video TikTok</li>
+      <li><b>2</b>Adin Preset Finder memindai video, bio, dan komentar</li>
+      <li><b>3</b>Link preset diambil otomatis</li>
+      <li><b>4</b>Salin preset yang kamu butuhkan</li>
+    </ol>
+  </div>
+
+  <footer>
+    <div class="t"><svg viewBox="0 0 40 40" fill="none" stroke="#3db4ff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 14V8a3 3 0 0 1 3-3h6M26 5h6a3 3 0 0 1 3 3v6M35 26v6a3 3 0 0 1-3 3h-6M14 35H8a3 3 0 0 1-3-3v-6"/><path d="M13 27 20 12l7 15M16 22h8"/></svg>Adin Preset Finder</div>
+    Tempel link TikTok dan dapatkan link preset Alight Motion yang tersembunyi di deskripsi, bio, komentar, dan balasan.
+    <div class="c"><div><b>Jelajahi</b><span>Kolom cari</span><span>Kembali ke atas</span></div><div><b>Tentang</b><span>Gratis dipakai</span><span>Tanpa daftar</span><span>Tanpa iklan</span></div></div>
+    <p class="by2">Dibuat oleh Adin</p>
+  </footer>
+</main>
+<script>
+const $=id=>document.getElementById(id), out=$("out"), steps=out.innerHTML;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt=n=>n>=1e6?(n/1e6).toFixed(1)+"jt":n>=1e3?(n/1e3).toFixed(1)+"rb":String(n);
+let hist=[];try{hist=JSON.parse(localStorage.getItem("hist")||"[]")}catch(e){}
+function chips(){$("chips").innerHTML=hist.map(h=>`<button class="chip" data-u="${esc(h)}">${esc(h.replace(/^https?:\/\//,""))}</button>`).join("")}
+$("chips").onclick=e=>{const u=e.target.dataset.u;if(u){$("url").value=u;search()}};
+$("paste").onclick=async()=>{try{$("url").value=await navigator.clipboard.readText()}catch(e){$("url").focus()}};
+$("url").onkeydown=e=>{if(e.key==="Enter")search()};
+$("go").onclick=search;
+async function search(){
+  const url=$("url").value.trim();
+  if(!/tiktok\.com/i.test(url)){out.innerHTML='<div class="state err">Masukkan link TikTok yang valid.</div>';return}
+  $("go").disabled=true;$("go").textContent="Mencari";
+  out.innerHTML='<div class="state"><div class="spin"></div>Memindai deskripsi, bio, komentar, dan balasan…</div>';
+  try{
+    const r=await fetch("/api/search?url="+encodeURIComponent(url));
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.error||"Gagal mencari.");
+    hist=[url,...hist.filter(h=>h!==url)].slice(0,5);localStorage.setItem("hist",JSON.stringify(hist));chips();
+    render(d);
+  }catch(e){out.innerHTML=`<div class="state err">${esc(e.message)}</div>`}
+  $("go").disabled=false;$("go").textContent="Cari";
+}
+const brk=l=>`<svg viewBox="0 0 64 64" fill="none" stroke="#3db4ff" stroke-width="2.5" stroke-linecap="round"><path d="M8 22V12a4 4 0 0 1 4-4h10M42 8h10a4 4 0 0 1 4 4v10M56 42v10a4 4 0 0 1-4 4H42M22 56H12a4 4 0 0 1-4-4V42"/><text x="32" y="38" fill="#e8f0ff" stroke="none" font-size="15" font-weight="700" text-anchor="middle" font-family="Chakra Petch,sans-serif">${l}</text></svg>`;
+function render({video:v,results:rs}){
+  const media=v.play?`<video src="${esc(v.play)}" poster="${esc(v.cover)}" controls playsinline preload="none"></video>`:(v.cover?`<img src="${esc(v.cover)}" alt="">`:"");
+  let h=media?`<div class="player">${media}</div>`:"";
+  h+=`<p class="cap">${esc(v.title)}</p><div class="meta"><div><small>Akun</small><b>@${esc(v.author)}</b></div><div><small>Komentar</small><b>${fmt(v.comments)}</b></div><div><small>Views</small><b>${fmt(v.views)}</b></div><div><small>Likes</small><b>${fmt(v.likes)}</b></div></div>`;
+  if(!rs.length)h+='<div class="state">Tidak ada link preset di video ini. Coba video lain.</div>';
+  else{
+    h+=`<div class="h" style="margin-top:28px"><i></i><h2>Link preset</h2></div>`;
+    rs.forEach((x,i)=>{
+      const xml=x.type==="xml";
+      h+=`<div class="card" style="animation-delay:${i*90}ms"><div class="thumb">${xml||!v.cover?brk(xml?"XML":"5MB"):`<img src="${esc(v.cover)}" alt="">`}</div><div class="info"><b>${xml?"Preset XML":"Preset 5MB"}</b><span class="tag ${xml?"xml":""}">${xml?"XML":"5MB"}</span><div class="by">dari ${x.source}${x.by?" · @"+esc(x.by):""}</div></div><div class="link">${esc(x.url)}</div><div class="act"><a href="${esc(x.url)}" target="_blank" rel="noopener">${xml?"Ambil file":"Buka preset"}</a><button data-c="${esc(x.url)}">Salin link</button></div></div>`;
+    });
+  }
+  out.innerHTML=h;
+}
+out.onclick=async e=>{const c=e.target.dataset.c;if(!c)return;try{await navigator.clipboard.writeText(c);e.target.textContent="Tersalin"}catch(_){e.target.textContent="Gagal"}setTimeout(()=>e.target.textContent="Salin link",1500)};
+chips();
+</script>
+</body>
+</html>
