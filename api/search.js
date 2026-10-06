@@ -51,15 +51,17 @@ export default async function handler(req, res) {
       id: v.id,
       title: v.title || "",
       cover: v.cover || v.origin_cover || "",
+      play: v.play || v.wmplay || "",
       author: v.author ? v.author.unique_id : "",
       comments: v.comment_count || 0,
       views: v.play_count || 0,
       likes: v.digg_count || 0,
     };
     const results = [];
+    const done = () => results.some((r) => r.type === "5mb") && results.some((r) => r.type === "xml");
     extract(video.title, "deskripsi", video.author, results);
 
-    if (video.author) {
+    if (video.author && !done()) {
       const u = await call("/user/info", { unique_id: video.author }).catch(() => null);
       extract(u && u.user && u.user.signature, "bio", video.author, results);
     }
@@ -67,29 +69,35 @@ export default async function handler(req, res) {
     // komentar (maks 3 halaman) + balasan (maks 20 komentar yang punya balasan)
     const withReplies = [];
     let cursor = 0;
-    for (let p = 0; p < 3; p++) {
+    for (let p = 0; p < 3 && !done(); p++) {
       const c = await call("/comment/list", { url, count: 50, cursor }).catch((e) => { if (e.message === "QUOTA") throw e; return null; });
       if (!c || !c.comments) break;
       for (const cm of c.comments) {
         extract(cm.text, "komentar", cm.user && cm.user.unique_id, results);
         if (cm.reply_total > 0) withReplies.push(cm);
       }
-      if (!c.hasMore) break;
+      if (done() || !c.hasMore) break;
       cursor = c.cursor;
     }
-    await Promise.all(
-      withReplies.slice(0, 20).map(async (cm) => {
-        const r = await call("/comment/reply", { video_id: video.id, comment_id: cm.id, count: 50, cursor: 0 }).catch(() => null);
-        ((r && r.comments) || []).forEach((rp) => extract(rp.text, "balasan", rp.user && rp.user.unique_id, results));
-      })
-    );
+    const queue = withReplies.slice(0, 20);
+    for (let i = 0; i < queue.length && !done(); i += 5) {
+      await Promise.all(
+        queue.slice(i, i + 5).map(async (cm) => {
+          const r = await call("/comment/reply", { video_id: video.id, comment_id: cm.id, count: 50, cursor: 0 }).catch(() => null);
+          ((r && r.comments) || []).forEach((rp) => extract(rp.text, "balasan", rp.user && rp.user.unique_id, results));
+        })
+      );
+    }
+
+    // cukup satu link per jenis: 5MB satu, XML satu
+    const one = ["5mb", "xml"].map((t) => results.find((r) => r.type === t)).filter(Boolean);
 
     res.setHeader("Cache-Control", "s-maxage=600");
-    res.status(200).json({ video, results });
+    res.status(200).json({ video, results: one });
   } catch (e) {
     if (/^API/.test(e.message)) return res.status(502).json({ error: e.message });
     if (e.message === "QUOTA") return res.status(429).json({ error: "Kuota API habis. Coba lagi nanti." });
     res.status(500).json({ error: "Gagal mengambil data. Coba lagi." });
   }
-}
-  
+    }
+                               
