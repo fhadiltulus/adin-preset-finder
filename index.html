@@ -168,7 +168,11 @@ h2 span{background:var(--acc2);border-radius:99px;font:600 12.5px var(--body);pa
 .wa-body{flex:1;min-width:0}
 .wa-card .btn-wa{margin-top:12px}
 
-footer{margin-top:34px;color:var(--mute);font-size:13px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+/* footer */
+footer{margin-top:34px;padding-top:20px;border-top:1px solid var(--line);color:var(--mute);font-size:13px;display:grid;gap:14px}
+footer p+p{margin-top:4px}
+footer b{color:var(--ink)}
+.ft-meta{display:flex;flex-direction:column;gap:4px;font-size:12.5px}
 footer a{color:var(--wa);text-decoration:none;font-weight:600}
 footer a:hover{text-decoration:underline}
 
@@ -280,8 +284,15 @@ footer a:hover{text-decoration:underline}
   </div>
 
   <footer>
-    <span>Dibuat oleh Adin</span>
-    <a href="https://whatsapp.com/channel/0029Vb8Jtc4Lo4hgNfr35E1x" target="_blank" rel="noopener">Saluran WhatsApp</a>
+    <div>
+      <p>Dibuat oleh <b>Adin Developer</b> untuk membantu orang-orang menemukan preset Alight Motion dengan lebih mudah.</p>
+      <p>Semua video dan preset adalah milik pembuat aslinya.</p>
+    </div>
+    <div class="ft-meta">
+      <span>© 2026 Adin Developer. Hak cipta dilindungi.</span>
+      <span>Dirilis 11 Oktober 2026</span>
+      <a href="https://whatsapp.com/channel/0029Vb8Jtc4Lo4hgNfr35E1x" target="_blank" rel="noopener">Saluran WhatsApp</a>
+    </div>
   </footer>
 </main>
 
