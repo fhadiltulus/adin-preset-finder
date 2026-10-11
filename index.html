@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Adin Preset Finder - Cari preset Alight Motion dari link TikTok</title>
 <meta name="description" content="Tempel link video TikTok, preset Alight Motion di deskripsi, bio, komentar, dan balasan dipindai otomatis.">
+<meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#060d22">
 <meta property="og:title" content="Adin Preset Finder">
 <meta property="og:description" content="Cari preset Alight Motion dari link TikTok mana pun.">
@@ -78,6 +79,7 @@ button{font:inherit;cursor:pointer;border:0;border-radius:12px;color:inherit}
 
 /* steps (shown until first search) */
 .steps{list-style:none;padding:0;margin-top:34px;display:grid;gap:0;border-left:2px solid var(--line);margin-left:6px}
+.steps[hidden]{display:none}
 .steps li{position:relative;padding:0 0 18px 22px}
 .steps li:last-child{padding-bottom:0}
 .steps li::before{
@@ -105,12 +107,30 @@ button{font:inherit;cursor:pointer;border:0;border-radius:12px;color:inherit}
 @keyframes grow{0%{transform:scaleX(0)}60%,100%{transform:scaleX(1)}}
 
 /* video summary */
-.vid{display:flex;gap:14px;margin-top:26px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
-.vid img{width:76px;height:100px;object-fit:cover;border-radius:10px;background:#0e2250;flex:none}
+.vid{margin-top:26px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
 .vid .meta{min-width:0}
 .vid b{display:block;font:700 16px var(--display)}
 .vid p{color:var(--mute);font-size:13.5px;margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .stats{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:8px;font-size:12.5px;color:var(--acc);font-weight:500}
+
+/* video player + download */
+.vid{display:block;padding:12px}
+.vid video{display:block;width:100%;max-height:64vh;border-radius:12px;background:#000;margin-bottom:12px}
+.vid img.cv{width:100%;height:auto;max-height:64vh;object-fit:cover;margin-bottom:12px}
+.vid .meta{padding:0 2px}
+.dl{
+  display:flex;align-items:center;justify-content:center;gap:9px;margin-top:14px;text-decoration:none;
+  background:var(--acc);color:#03112b;font-weight:700;font-size:16px;border-radius:12px;padding:14px;
+  transition:background .15s,transform .1s;
+}
+.dl:hover{background:#6bb4ff}
+.dl:active{transform:scale(.98)}
+.dl svg{width:20px;height:20px}
+.alt{display:block;text-align:center;margin-top:9px;font-size:13px;color:var(--mute)}
+.alt a{color:var(--acc)}
+
+.deep{display:block;width:100%;margin-top:14px;background:var(--acc);color:#03112b;font-weight:700;font-size:15px;border-radius:12px;padding:13px}
+.deep:hover{background:#6bb4ff}
 
 /* results */
 h2{font:700 20px var(--display);margin:30px 0 12px;display:flex;gap:10px;align-items:center}
@@ -199,12 +219,12 @@ footer a:hover{text-decoration:underline}
       <svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect x="2" y="2" width="36" height="36" rx="11" fill="#0c1838" stroke="#4da3ff" stroke-width="2"/><path d="M12 28 20 11l8 17M15.5 22h9" stroke="#4da3ff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       Adin Preset Finder
     </div>
-<div class="hd-right">
-        <a class="pill-wa" href="https://whatsapp.com/channel/0029Vb8Jtc4Lo4hgNfr35E1x" target="_blank" rel="noopener" aria-label="Gabung saluran WhatsApp">
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-2.9-.4-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1-1.4-.7-2.4-1.3-3.3-2.9-.2-.3.2-.3.6-1 .1-.2 0-.3 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1.1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.7 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.6-.3z"/></svg>
-      <span>Gabung saluran</span>
-    </a>
-    <button class="icon-btn" id="openSet" aria-label="Pengaturan" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+    <div class="hd-right">
+      <a class="pill-wa" href="https://whatsapp.com/channel/0029Vb8Jtc4Lo4hgNfr35E1x" target="_blank" rel="noopener" aria-label="Gabung saluran WhatsApp">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-2.9-.4-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1-1.4-.7-2.4-1.3-3.3-2.9-.2-.3.2-.3.6-1 .1-.2 0-.3 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1.1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.7 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.6-.3z"/></svg>
+        <span>Gabung saluran</span>
+      </a>
+      <button class="icon-btn" id="openSet" aria-label="Pengaturan" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
     </div>
   </header>
 
@@ -273,23 +293,23 @@ let hist=[];try{hist=JSON.parse(localStorage.getItem("hist")||"[]")}catch(e){}
 function chips(){$("chips").innerHTML=hist.map(h=>`<button class="chip" data-u="${esc(h)}">${esc(h.replace(/^https?:\/\//,""))}</button>`).join("")}
 $("chips").onclick=e=>{const u=e.target.dataset.u;if(u){$("url").value=u;search()}};
 $("paste").onclick=async()=>{try{$("url").value=await navigator.clipboard.readText()}catch(e){$("url").focus()}};
-$("url").onkeydown=e=>{if(e.key==="Enter")search()};
-$("go").onclick=search;
+$("url").onkeydown=e=>{if(e.key==="Enter")search(false)};
+$("go").onclick=()=>search(false);
 
 const lane=(name,l,w,d)=>`<div class="lane"><span>${name}</span><div class="track"><b style="left:${l}%;width:${w}%;animation-delay:${d}s"></b></div></div>`;
 const SCAN=`<div class="scan" role="status"><p>Memindai video…</p><div class="lanes">${
   lane("Deskripsi",4,38,0)+lane("Bio",20,30,.3)+lane("Komentar",8,70,.6)+lane("Balasan",32,50,.9)
 }<div class="ph"><i></i></div></div></div>`;
 
-async function search(){
+async function search(deep){
   const url=$("url").value.trim();
   const steps=$("steps");
   if(!/tiktok\.com/i.test(url)){out.innerHTML='<div class="state err">Masukkan link TikTok yang valid.</div>';return}
   $("go").disabled=true;$("go").textContent="Mencari";
   if(steps)steps.hidden=true;
-  out.innerHTML=SCAN;
+  out.innerHTML=deep?SCAN.replace("Memindai video…","Memindai lebih dalam, ini butuh waktu lebih lama…"):SCAN;
   try{
-    const r=await fetch("/api/search?url="+encodeURIComponent(url));
+    const r=await fetch("/api/search?url="+encodeURIComponent(url)+(deep?"&deep=1":""));
     const d=await r.json();
     if(!r.ok)throw new Error(d.error||"Gagal mencari.");
     hist=[url,...hist.filter(h=>h!==url)].slice(0,5);
@@ -299,9 +319,16 @@ async function search(){
   }catch(e){out.innerHTML=`<div class="state err">${esc(e.message)}</div>`}
   $("go").disabled=false;$("go").textContent="Cari";
 }
-function render({video:v,results:rs}){
-  let h=`<div class="vid">${v.cover?`<img src="${esc(v.cover)}" alt="">`:""}<div class="meta"><b>@${esc(v.author)}</b><p>${esc(v.title)}</p><div class="stats"><span>${fmt(v.views)} views</span><span>${fmt(v.likes)} likes</span><span>${fmt(v.comments)} komentar</span></div></div></div>`;
-  if(!rs.length)h+='<div class="state">Tidak ada link preset di video ini. Coba video lain.</div>';
+function render({video:v,results:rs,deepable,deep}){
+  const fname=`tiktok_${v.author||"video"}_${v.id||""}`;
+  const dlUrl=v.play?`/api/download?src=${encodeURIComponent(v.play)}&name=${encodeURIComponent(fname)}`:"";
+  const media=v.play
+    ?`<video controls playsinline preload="metadata" ${v.cover?`poster="${esc(v.cover)}"`:""} src="${esc(v.play)}"></video>`
+    :(v.cover?`<img class="cv" src="${esc(v.cover)}" alt="" onerror="this.remove()">`:"");
+  let h=`<div class="vid">${media}<div class="meta"><b>@${esc(v.author)}</b><p>${esc(v.title)}</p><div class="stats"><span>${fmt(v.views)} views</span><span>${fmt(v.likes)} likes</span><span>${fmt(v.comments)} komentar</span></div></div>${dlUrl?`<a class="dl" href="${dlUrl}" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 20h14"/></svg> Download video</a><span class="alt">Tidak terunduh? <a href="${esc(v.play)}" target="_blank" rel="noopener">Buka video langsung</a></span>`:""}</div>`;
+  if(!rs.length){
+    h+=`<div class="state">${deep?"Sudah dicari sampai dalam, tapi tidak ada link preset di video ini.":"Belum ada link preset yang ketemu."}${deepable?`<button class="deep" data-deep="1">Cari lebih dalam</button><span class="alt" style="text-align:left">Video ini punya banyak komentar. Pencarian lebih dalam lebih lama dan memakai jatah lebih banyak.</span>`:""}</div>`;
+  }
   else{
     h+=`<h2>Link preset <span>${rs.length}</span></h2>`;
     rs.forEach(x=>{
@@ -311,7 +338,7 @@ function render({video:v,results:rs}){
   }
   out.innerHTML=h;
 }
-out.onclick=async e=>{const c=e.target.dataset.c;if(!c)return;try{await navigator.clipboard.writeText(c);e.target.textContent="Tersalin"}catch(_){e.target.textContent="Gagal"}setTimeout(()=>e.target.textContent="Salin link",1500)};
+out.onclick=async e=>{if(e.target.dataset.deep){search(true);return}const c=e.target.dataset.c;if(!c)return;try{await navigator.clipboard.writeText(c);e.target.textContent="Tersalin"}catch(_){e.target.textContent="Gagal"}setTimeout(()=>e.target.textContent="Salin link",1500)};
 chips();
 
 /* ===== Pengaturan ===== */
